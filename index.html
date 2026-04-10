@@ -2,30 +2,30 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>스피또 500</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>스피또 500 - 개발자 에디션</title>
   <style>
     :root {
-      --bg1: #f8fbff;
+      --bg1: #f7fbff;
       --bg2: #eef6ff;
-      --panel: rgba(12, 19, 39, 0.82);
-      --panel-soft: rgba(24, 33, 59, 0.74);
-      --line: #f3de67;
+      --panel: rgba(18, 28, 56, 0.88);
+      --panel-2: rgba(28, 40, 72, 0.84);
+      --line: #f2d968;
       --cyan: #58d4ff;
-      --cyan-soft: #8ce8ff;
       --white: #f8fbff;
-      --pink: #ff78cf;
-      --purple: #8b51ff;
-      --red: #ff6767;
-      --green: #6df09a;
+      --pink: #ff8fd8;
+      --red: #ff6a6a;
+      --green: #70eea0;
       --shadow: 0 18px 48px rgba(27, 54, 106, 0.16);
       --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+      --safe: max(16px, env(safe-area-inset-left));
     }
 
     * { box-sizing: border-box; }
 
+    html, body { margin: 0; padding: 0; }
+
     body {
-      margin: 0;
       min-height: 100vh;
       font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
       background:
@@ -34,9 +34,9 @@
         linear-gradient(180deg, var(--bg1), var(--bg2));
       color: var(--white);
       display: flex;
-      align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 18px 14px calc(20px + env(safe-area-inset-bottom));
+      overflow-x: hidden;
     }
 
     .wrap {
@@ -44,7 +44,7 @@
     }
 
     .board {
-      background: linear-gradient(180deg, rgba(14, 22, 45, 0.88), rgba(24, 35, 66, 0.82));
+      background: linear-gradient(180deg, rgba(14, 22, 45, 0.9), rgba(24, 35, 66, 0.84));
       border: 2px solid rgba(243, 222, 103, 0.72);
       border-radius: 28px;
       box-shadow: var(--shadow);
@@ -53,7 +53,7 @@
     }
 
     .inner {
-      padding: 28px 28px 24px;
+      padding: 24px;
     }
 
     .top-msg {
@@ -63,12 +63,15 @@
       margin-bottom: 18px;
       text-shadow: 0 0 18px rgba(255, 120, 207, 0.4);
       letter-spacing: 0.02em;
+      font-size: clamp(0.95rem, 2.3vw, 1.18rem);
+      line-height: 1.4;
+      word-break: keep-all;
     }
 
     .title-box {
       border: 3px solid rgba(243, 222, 103, 0.85);
-      border-radius: 6px;
-      padding: 18px 20px 14px;
+      border-radius: 10px;
+      padding: 16px 14px 12px;
       position: relative;
       background: linear-gradient(180deg, rgba(10, 14, 28, 0.36), rgba(10, 14, 28, 0.16));
       box-shadow: inset 0 0 0 2px rgba(243, 222, 103, 0.14);
@@ -92,33 +95,35 @@
     .title-main {
       text-align: center;
       color: var(--line);
-      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-size: clamp(1.8rem, 6vw, 3rem);
       font-weight: 900;
-      letter-spacing: 0.28em;
+      letter-spacing: clamp(0.08em, 1vw, 0.28em);
       text-shadow: 0 0 22px rgba(243, 222, 103, 0.25);
       margin-bottom: 8px;
-      padding-left: 0.28em;
+      line-height: 1.2;
+      word-break: keep-all;
     }
 
     .title-sub {
       text-align: center;
       color: var(--cyan);
-      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-size: clamp(0.95rem, 3vw, 1.45rem);
       font-weight: 800;
-      letter-spacing: 0.45em;
-      padding-left: 0.45em;
+      letter-spacing: clamp(0.08em, 0.8vw, 0.24em);
+      line-height: 1.35;
+      word-break: keep-all;
     }
 
     .guide {
-      display: flex;
-      justify-content: center;
-      gap: 28px;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
       text-align: center;
-      padding: 20px 8px 10px;
+      padding: 20px 0 12px;
       font-weight: 800;
       color: rgba(255,255,255,0.96);
-      font-size: 1.06rem;
+      font-size: clamp(0.95rem, 2.5vw, 1.06rem);
+      line-height: 1.45;
     }
 
     .divider {
@@ -129,40 +134,43 @@
 
     .labels {
       display: grid;
-      grid-template-columns: 150px 1fr;
+      grid-template-columns: 132px 1fr;
       align-items: end;
-      gap: 18px;
+      gap: 16px;
       margin-bottom: 12px;
       color: var(--cyan);
       font-weight: 900;
-      font-size: clamp(1rem, 2vw, 1.65rem);
-      letter-spacing: 0.08em;
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      letter-spacing: 0.03em;
     }
 
     .scratch-zone {
       display: grid;
-      grid-template-columns: 150px 1fr;
-      gap: 18px;
-      align-items: center;
+      grid-template-columns: 132px 1fr;
+      gap: 16px;
+      align-items: start;
     }
 
     .my-grid {
       display: grid;
-      grid-template-columns: repeat(6, minmax(72px, 1fr));
+      grid-template-columns: repeat(6, minmax(0, 1fr));
       gap: 12px;
     }
 
     .scratch-card {
       position: relative;
-      height: 94px;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      min-height: 74px;
       border: 4px solid rgba(255,255,255,0.96);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
       background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
       box-shadow: var(--card-shadow);
       cursor: pointer;
       transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
       user-select: none;
+      padding: 0;
     }
 
     .scratch-card:hover {
@@ -175,9 +183,7 @@
       box-shadow: 0 0 0 3px rgba(255, 120, 207, 0.2), 0 18px 36px rgba(0, 0, 0, 0.24);
     }
 
-    .scratch-card.revealed {
-      cursor: default;
-    }
+    .scratch-card.revealed { cursor: default; }
 
     .scratch-card.win.revealed .number {
       background: linear-gradient(135deg, #5f39ff, #8d4fff 60%, #c978ff);
@@ -194,7 +200,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-size: clamp(1.5rem, 5vw, 2.4rem);
       font-weight: 900;
       color: white;
       background: linear-gradient(135deg, #3b2578, #6e3ef0 60%, #9b61ff);
@@ -218,8 +224,8 @@
         linear-gradient(180deg, #525861, #2b2f35);
       transition: opacity 0.28s ease, transform 0.28s ease;
       color: rgba(255,255,255,0.28);
-      font-size: 1.3rem;
-      letter-spacing: 0.2em;
+      font-size: clamp(1rem, 4vw, 1.3rem);
+      letter-spacing: 0.15em;
       font-weight: 900;
     }
 
@@ -232,8 +238,8 @@
     .stats {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px 36px;
-      font-size: clamp(1rem, 2vw, 1.5rem);
+      gap: 12px 28px;
+      font-size: clamp(1rem, 2.8vw, 1.35rem);
       font-weight: 900;
       padding: 4px 4px 0;
     }
@@ -241,8 +247,9 @@
     .stat-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
+      line-height: 1.45;
     }
 
     .stat-value { color: var(--white); }
@@ -251,12 +258,13 @@
 
     .remain {
       color: var(--cyan);
-      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-size: clamp(1rem, 2.8vw, 1.3rem);
       font-weight: 900;
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       flex-wrap: wrap;
+      line-height: 1.45;
     }
 
     .result-box {
@@ -264,14 +272,16 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
       border: 1px solid rgba(255,255,255,0.14);
       border-radius: 18px;
-      padding: 18px 18px 16px;
+      padding: 18px 16px 16px;
     }
 
     .result-main {
       text-align: center;
-      font-size: clamp(1.05rem, 2vw, 1.5rem);
+      font-size: clamp(1.02rem, 3vw, 1.35rem);
       font-weight: 900;
       margin-bottom: 10px;
+      line-height: 1.45;
+      word-break: keep-all;
     }
 
     .result-sub {
@@ -279,6 +289,8 @@
       color: #ffd0ef;
       font-weight: 800;
       margin-bottom: 14px;
+      line-height: 1.5;
+      word-break: keep-all;
     }
 
     .buttons {
@@ -297,6 +309,7 @@
       font-size: 0.98rem;
       cursor: pointer;
       transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.14s ease;
+      font-family: inherit;
     }
 
     button:hover { transform: translateY(-1px); }
@@ -319,6 +332,9 @@
       text-align: center;
       color: #ffe88b;
       font-weight: 800;
+      line-height: 1.45;
+      word-break: keep-all;
+      font-size: clamp(0.92rem, 2.4vw, 1rem);
     }
 
     .prize-chip {
@@ -340,25 +356,112 @@
     }
 
     @media (max-width: 860px) {
-      .inner { padding: 22px 16px 20px; }
+      .inner { padding: 20px 14px 18px; }
+
       .labels,
       .scratch-zone {
         grid-template-columns: 1fr;
       }
-      .my-grid {
-        grid-template-columns: repeat(3, 1fr);
+
+      .labels {
+        gap: 8px;
+        margin-bottom: 10px;
       }
+
+      .scratch-zone {
+        gap: 14px;
+      }
+
+      #winCard {
+        width: min(110px, 30vw);
+      }
+
+      .my-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+      }
+
       .stats {
         grid-template-columns: 1fr;
+        gap: 10px;
       }
-      .title-main { letter-spacing: 0.16em; padding-left: 0.16em; }
-      .title-sub { letter-spacing: 0.2em; padding-left: 0.2em; }
+
+      .guide {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding-top: 18px;
+      }
+
       .mobile-note {
         display: block;
         text-align: center;
         margin-top: 10px;
         color: rgba(255,255,255,0.72);
         font-size: 0.92rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 12px 10px calc(16px + env(safe-area-inset-bottom));
+      }
+
+      .board {
+        border-radius: 22px;
+      }
+
+      .inner {
+        padding: 16px 12px 16px;
+      }
+
+      .title-box {
+        padding: 14px 10px 10px;
+      }
+
+      .title-main {
+        font-size: 1.85rem;
+        letter-spacing: 0.08em;
+      }
+
+      .title-sub {
+        font-size: 0.96rem;
+        letter-spacing: 0.08em;
+      }
+
+      #winCard {
+        width: 88px;
+      }
+
+      .my-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+
+      .scratch-card {
+        border-width: 3px;
+        min-height: 64px;
+      }
+
+      .number {
+        font-size: 1.35rem;
+      }
+
+      .result-box {
+        border-radius: 16px;
+        padding: 16px 12px 14px;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      button {
+        width: 100%;
+        padding: 13px 16px;
+      }
+
+      .remain {
+        font-size: 0.98rem;
       }
     }
   </style>
@@ -370,7 +473,8 @@
         <div class="top-msg" id="topMsg"></div>
 
         <div class="title-box">
-          <div class="title-main">★ 스 피 또 500 ★</div>
+          <div class="title-main">★ 스피또 500 ★</div>
+          <div class="title-sub">개발자 에디션</div>
         </div>
 
         <div class="guide">
@@ -473,7 +577,7 @@
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
-    function newRound(initial = false) {
+    function newRound() {
       state.winningNumber = randNum();
       state.myNumbers = Array.from({ length: 6 }, randNum);
       state.revealed = Array(7).fill(false);
@@ -565,10 +669,9 @@
       winCard.innerHTML = '';
       myGrid.innerHTML = '';
 
-      const winRevealed = state.revealed[0];
       const winCardEl = createCard({
         number: state.winningNumber,
-        revealed: winRevealed,
+        revealed: state.revealed[0],
         selected: state.cursor === 0,
         win: true,
         match: false,
@@ -626,7 +729,7 @@
       else if (key === 'r') newRound();
     });
 
-    newRound(true);
+    newRound();
   </script>
 </body>
 </html>
