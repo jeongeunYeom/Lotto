@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>스피또 500 - 개발자 에디션</title>
+  <title>스피또 500</title>
   <style>
     :root {
       --bg1: #f7fbff;
@@ -474,7 +474,6 @@
 
         <div class="title-box">
           <div class="title-main">★ 스피또 500 ★</div>
-          <div class="title-sub">개발자 에디션</div>
         </div>
 
         <div class="guide">
@@ -501,7 +500,7 @@
           <div class="stat-row"><span>🍀 사용 :</span> <span class="stat-value" id="spent"></span></div>
           <div class="stat-row"><span>💰 획득 :</span> <span class="stat-value" id="earned"></span></div>
           <div class="stat-row"><span>📊 수익 :</span> <span class="stat-value profit" id="profit"></span></div>
-          <div class="stat-row"><span>🎁 이번 판 당첨금 :</span> <span class="prize-chip" id="roundPrize"></span></div>
+          <div class="stat-row"><span>🎁 당첨금 :</span> <span class="prize-chip" id="roundPrize">결과 공개 후 표시</span></div>
         </div>
 
         <div class="divider" style="margin-top: 20px;"></div>
@@ -513,7 +512,7 @@
 
         <div class="result-box">
           <div class="result-main" id="resultMain">총 7칸을 직접 선택해서 긁어보세요</div>
-          <div class="result-sub" id="resultSub">같은 숫자가 하나라도 있으면 이번 판 랜덤 당첨금을 획득해요</div>
+          <div class="result-sub" id="resultSub">같은 숫자가 하나라도 있으면 숨겨진 당첨금을 획득해요</div>
           <div class="buttons">
             <button class="primary" id="scratchBtn">현재 칸 긁기</button>
             <button class="secondary" id="newRoundBtn">다음 판 시작</button>
@@ -534,7 +533,15 @@
       '🪙 오늘은 본전 이상 가보자',
     ];
 
-    const prizeOptions = [1000, 5000, 10000, 50000, 200000, 500000, 1000000];
+    const prizeWeights = [
+      { amount: 1000, weight: 36 },
+      { amount: 5000, weight: 24 },
+      { amount: 10000, weight: 16 },
+      { amount: 50000, weight: 10 },
+      { amount: 200000, weight: 7 },
+      { amount: 500000, weight: 5 },
+      { amount: 1000000, weight: 2 },
+    ];
     const CARD_PRICE = 1000;
 
     const state = {
@@ -577,16 +584,28 @@
       return arr[Math.floor(Math.random() * arr.length)];
     }
 
+    function weightedPrize() {
+      const total = prizeWeights.reduce((sum, item) => sum + item.weight, 0);
+      let r = Math.random() * total;
+
+      for (const item of prizeWeights) {
+        r -= item.weight;
+        if (r < 0) return item.amount;
+      }
+
+      return prizeWeights[0].amount;
+    }
+
     function newRound() {
       state.winningNumber = randNum();
       state.myNumbers = Array.from({ length: 6 }, randNum);
       state.revealed = Array(7).fill(false);
       state.cursor = 0;
-      state.roundPrize = choice(prizeOptions);
+      state.roundPrize = weightedPrize();
       state.currentPrize = 0;
       state.roundOver = false;
       state.resultMain = '총 7칸을 직접 선택해서 긁어보세요';
-      state.resultSub = '같은 숫자가 하나라도 있으면 이번 판 랜덤 당첨금을 획득해요';
+      state.resultSub = '같은 숫자가 하나라도 있으면 숨겨진 당첨금을 획득해요';
       state.totalSpent += CARD_PRICE;
       topMsg.textContent = choice(messages);
       render();
@@ -695,7 +714,7 @@
 
       spentEl.textContent = fmt(state.totalSpent);
       earnedEl.textContent = fmt(state.totalEarned);
-      roundPrizeEl.textContent = fmt(state.roundPrize);
+      roundPrizeEl.textContent = state.roundOver ? fmt(state.roundPrize) : '결과 공개 후 표시';
       remainCountEl.textContent = remainingCount();
       resultMainEl.textContent = state.resultMain;
       resultSubEl.textContent = state.resultSub;
