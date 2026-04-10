@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>스피또 500 - 개발자 에디션</title>
+  <style>
+    :root {
+      --bg1: #f8fbff;
+      --bg2: #eef6ff;
+      --panel: rgba(12, 19, 39, 0.82);
+      --panel-soft: rgba(24, 33, 59, 0.74);
+      --line: #f3de67;
+      --cyan: #58d4ff;
+      --cyan-soft: #8ce8ff;
+      --white: #f8fbff;
+      --pink: #ff78cf;
+      --purple: #8b51ff;
+      --red: #ff6767;
+      --green: #6df09a;
+      --shadow: 0 18px 48px rgba(27, 54, 106, 0.16);
+      --card-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, #ffffff 0%, #f7fbff 28%, transparent 55%),
+        radial-gradient(circle at top right, #fff6d9 0%, rgba(255, 246, 217, 0.55) 22%, transparent 48%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .wrap {
+      width: min(980px, 100%);
+    }
+
+    .board {
+      background: linear-gradient(180deg, rgba(14, 22, 45, 0.88), rgba(24, 35, 66, 0.82));
+      border: 2px solid rgba(243, 222, 103, 0.72);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .inner {
+      padding: 28px 28px 24px;
+    }
+
+    .top-msg {
+      color: #ffd5f2;
+      text-align: center;
+      font-weight: 700;
+      margin-bottom: 18px;
+      text-shadow: 0 0 18px rgba(255, 120, 207, 0.4);
+      letter-spacing: 0.02em;
+    }
+
+    .title-box {
+      border: 3px solid rgba(243, 222, 103, 0.85);
+      border-radius: 6px;
+      padding: 18px 20px 14px;
+      position: relative;
+      background: linear-gradient(180deg, rgba(10, 14, 28, 0.36), rgba(10, 14, 28, 0.16));
+      box-shadow: inset 0 0 0 2px rgba(243, 222, 103, 0.14);
+    }
+
+    .title-box::before,
+    .title-box::after {
+      content: "";
+      position: absolute;
+      width: 6px;
+      top: 14px;
+      bottom: 14px;
+      background: linear-gradient(180deg, transparent, var(--cyan), transparent);
+      opacity: 0.9;
+      border-radius: 999px;
+    }
+
+    .title-box::before { left: -3px; }
+    .title-box::after { right: -3px; }
+
+    .title-main {
+      text-align: center;
+      color: var(--line);
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: 0.28em;
+      text-shadow: 0 0 22px rgba(243, 222, 103, 0.25);
+      margin-bottom: 8px;
+      padding-left: 0.28em;
+    }
+
+    .title-sub {
+      text-align: center;
+      color: var(--cyan);
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-weight: 800;
+      letter-spacing: 0.45em;
+      padding-left: 0.45em;
+    }
+
+    .guide {
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      text-align: center;
+      padding: 20px 8px 10px;
+      font-weight: 800;
+      color: rgba(255,255,255,0.96);
+      font-size: 1.06rem;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.95), transparent);
+      margin: 6px 0 20px;
+    }
+
+    .labels {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      align-items: end;
+      gap: 18px;
+      margin-bottom: 12px;
+      color: var(--cyan);
+      font-weight: 900;
+      font-size: clamp(1rem, 2vw, 1.65rem);
+      letter-spacing: 0.08em;
+    }
+
+    .scratch-zone {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .my-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(72px, 1fr));
+      gap: 12px;
+    }
+
+    .scratch-card {
+      position: relative;
+      height: 94px;
+      border: 4px solid rgba(255,255,255,0.96);
+      border-radius: 4px;
+      overflow: hidden;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02));
+      box-shadow: var(--card-shadow);
+      cursor: pointer;
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+      user-select: none;
+    }
+
+    .scratch-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+    }
+
+    .scratch-card.selected {
+      border-color: #ffb1ea;
+      box-shadow: 0 0 0 3px rgba(255, 120, 207, 0.2), 0 18px 36px rgba(0, 0, 0, 0.24);
+    }
+
+    .scratch-card.revealed {
+      cursor: default;
+    }
+
+    .scratch-card.win.revealed .number {
+      background: linear-gradient(135deg, #5f39ff, #8d4fff 60%, #c978ff);
+    }
+
+    .scratch-card.match.revealed .number {
+      background: linear-gradient(135deg, #8227ff, #ff70cf);
+      box-shadow: inset 0 0 0 2px rgba(255,255,255,0.16), 0 0 18px rgba(255, 120, 207, 0.25);
+    }
+
+    .number {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      font-weight: 900;
+      color: white;
+      background: linear-gradient(135deg, #3b2578, #6e3ef0 60%, #9b61ff);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .scratch-layer {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.28), rgba(255,255,255,0.06)),
+        repeating-linear-gradient(
+          -45deg,
+          rgba(255,255,255,0.1) 0px,
+          rgba(255,255,255,0.1) 7px,
+          rgba(255,255,255,0.02) 7px,
+          rgba(255,255,255,0.02) 14px
+        ),
+        linear-gradient(180deg, #525861, #2b2f35);
+      transition: opacity 0.28s ease, transform 0.28s ease;
+      color: rgba(255,255,255,0.28);
+      font-size: 1.3rem;
+      letter-spacing: 0.2em;
+      font-weight: 900;
+    }
+
+    .scratch-card.revealed .scratch-layer {
+      opacity: 0;
+      transform: scale(1.08);
+      pointer-events: none;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 36px;
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      font-weight: 900;
+      padding: 4px 4px 0;
+    }
+
+    .stat-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-value { color: var(--white); }
+    .profit.plus { color: var(--green); }
+    .profit.minus { color: var(--red); }
+
+    .remain {
+      color: var(--cyan);
+      font-size: clamp(1rem, 2vw, 1.45rem);
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .result-box {
+      margin-top: 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+    }
+
+    .result-main {
+      text-align: center;
+      font-size: clamp(1.05rem, 2vw, 1.5rem);
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+
+    .result-sub {
+      text-align: center;
+      color: #ffd0ef;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    button {
+      border: 0;
+      padding: 14px 18px;
+      border-radius: 999px;
+      font-weight: 900;
+      font-size: 0.98rem;
+      cursor: pointer;
+      transition: transform 0.14s ease, opacity 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    button:hover { transform: translateY(-1px); }
+    button:active { transform: translateY(1px); }
+
+    .primary {
+      background: linear-gradient(135deg, #ffe46d, #ffc84c);
+      color: #1d2130;
+      box-shadow: 0 12px 28px rgba(255, 208, 76, 0.3);
+    }
+
+    .secondary {
+      background: linear-gradient(135deg, #7ce3ff, #56baf7);
+      color: #102034;
+      box-shadow: 0 12px 28px rgba(86, 186, 247, 0.26);
+    }
+
+    .hint {
+      margin-top: 16px;
+      text-align: center;
+      color: #ffe88b;
+      font-weight: 800;
+    }
+
+    .prize-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 114px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(255, 233, 127, 0.2), rgba(255, 183, 66, 0.12));
+      border: 1px solid rgba(255, 227, 113, 0.34);
+      color: #ffe97b;
+      font-weight: 900;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    .mobile-note {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .inner { padding: 22px 16px 20px; }
+      .labels,
+      .scratch-zone {
+        grid-template-columns: 1fr;
+      }
+      .my-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .stats {
+        grid-template-columns: 1fr;
+      }
+      .title-main { letter-spacing: 0.16em; padding-left: 0.16em; }
+      .title-sub { letter-spacing: 0.2em; padding-left: 0.2em; }
+      .mobile-note {
+        display: block;
+        text-align: center;
+        margin-top: 10px;
+        color: rgba(255,255,255,0.72);
+        font-size: 0.92rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="board">
+      <div class="inner">
+        <div class="top-msg" id="topMsg"></div>
+
+        <div class="title-box">
+          <div class="title-main">★ 스 피 또 500 ★</div>
+          <div class="title-sub">개 발 자 에 디 션</div>
+        </div>
+
+        <div class="guide">
+          <span>← → / A D : 이동</span>
+          <span>Space / Enter : 긁기</span>
+          <span>클릭 / 터치도 가능</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="labels">
+          <div>당첨번호</div>
+          <div>내 번호 (6개)</div>
+        </div>
+
+        <div class="scratch-zone">
+          <div id="winCard"></div>
+          <div class="my-grid" id="myGrid"></div>
+        </div>
+
+        <div class="divider" style="margin-top: 24px;"></div>
+
+        <div class="stats">
+          <div class="stat-row"><span>🍀 사용 :</span> <span class="stat-value" id="spent"></span></div>
+          <div class="stat-row"><span>💰 획득 :</span> <span class="stat-value" id="earned"></span></div>
+          <div class="stat-row"><span>📊 수익 :</span> <span class="stat-value profit" id="profit"></span></div>
+          <div class="stat-row"><span>🎁 이번 판 당첨금 :</span> <span class="prize-chip" id="roundPrize"></span></div>
+        </div>
+
+        <div class="divider" style="margin-top: 20px;"></div>
+
+        <div class="remain">
+          <span>남은 칸 : <span id="remainCount"></span>개</span>
+          <span>(전부 긁어야 결과 공개!)</span>
+        </div>
+
+        <div class="result-box">
+          <div class="result-main" id="resultMain">총 7칸을 직접 선택해서 긁어보세요</div>
+          <div class="result-sub" id="resultSub">같은 숫자가 하나라도 있으면 이번 판 랜덤 당첨금을 획득해요</div>
+          <div class="buttons">
+            <button class="primary" id="scratchBtn">현재 칸 긁기</button>
+            <button class="secondary" id="newRoundBtn">다음 판 시작</button>
+          </div>
+          <div class="hint">R: 다음 판 / Space: 긁기 / 방향키: 이동</div>
+          <div class="mobile-note">모바일에서는 칸을 바로 눌러서 긁을 수 있어요.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const messages = [
+      '🍀 merge했는데 conflict 하나도 없음',
+      '✨ 이번엔 진짜 될지도?',
+      '🎯 개발자 에디션 도전!',
+      '💫 한 칸씩 긁는 재미',
+      '🪙 오늘은 본전 이상 가보자',
+    ];
+
+    const prizeOptions = [1000, 5000, 10000, 50000, 200000, 500000, 1000000];
+    const CARD_PRICE = 1000;
+
+    const state = {
+      totalSpent: 0,
+      totalEarned: 0,
+      cursor: 0,
+      winningNumber: 1,
+      myNumbers: [],
+      revealed: [],
+      roundPrize: 1000,
+      currentPrize: 0,
+      roundOver: false,
+      resultMain: '',
+      resultSub: '',
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const topMsg = $('topMsg');
+    const winCard = $('winCard');
+    const myGrid = $('myGrid');
+    const spentEl = $('spent');
+    const earnedEl = $('earned');
+    const profitEl = $('profit');
+    const remainCountEl = $('remainCount');
+    const resultMainEl = $('resultMain');
+    const resultSubEl = $('resultSub');
+    const roundPrizeEl = $('roundPrize');
+    const scratchBtn = $('scratchBtn');
+    const newRoundBtn = $('newRoundBtn');
+
+    function fmt(num) {
+      return num.toLocaleString('ko-KR') + '원';
+    }
+
+    function randNum() {
+      return Math.floor(Math.random() * 9) + 1;
+    }
+
+    function choice(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function newRound(initial = false) {
+      state.winningNumber = randNum();
+      state.myNumbers = Array.from({ length: 6 }, randNum);
+      state.revealed = Array(7).fill(false);
+      state.cursor = 0;
+      state.roundPrize = choice(prizeOptions);
+      state.currentPrize = 0;
+      state.roundOver = false;
+      state.resultMain = '총 7칸을 직접 선택해서 긁어보세요';
+      state.resultSub = '같은 숫자가 하나라도 있으면 이번 판 랜덤 당첨금을 획득해요';
+      state.totalSpent += CARD_PRICE;
+      topMsg.textContent = choice(messages);
+      render();
+    }
+
+    function remainingCount() {
+      return state.revealed.filter(v => !v).length;
+    }
+
+    function matchCount() {
+      return state.myNumbers.filter(n => n === state.winningNumber).length;
+    }
+
+    function finishRound() {
+      const count = matchCount();
+      if (count > 0) {
+        state.currentPrize = state.roundPrize;
+        state.totalEarned += state.currentPrize;
+        state.resultMain = `당첨! 같은 숫자 ${count}개 발견`;
+        state.resultSub = `이번 판 당첨금 ${fmt(state.currentPrize)} 획득`;
+      } else {
+        state.currentPrize = 0;
+        state.resultMain = '꽝! 같은 숫자가 없어요';
+        state.resultSub = `이번 판 당첨금은 ${fmt(state.roundPrize)}였지만 당첨되지 않았어요`;
+      }
+      state.roundOver = true;
+      render();
+    }
+
+    function scratch(index = state.cursor) {
+      if (state.roundOver) return;
+      state.cursor = index;
+      state.revealed[index] = true;
+      render();
+      if (state.revealed.every(Boolean)) {
+        finishRound();
+      }
+    }
+
+    function moveCursor(direction) {
+      if (state.roundOver) return;
+      state.cursor = (state.cursor + direction + 7) % 7;
+      render();
+    }
+
+    function createCard({ number, revealed, selected, win, match, index }) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'scratch-card';
+      if (selected && !state.roundOver) btn.classList.add('selected');
+      if (revealed) btn.classList.add('revealed');
+      if (win) btn.classList.add('win');
+      if (match) btn.classList.add('match');
+      btn.setAttribute('aria-label', `${index === 0 ? '당첨번호' : `내 번호 ${index}`} ${revealed ? number : '가려짐'}`);
+
+      const numberEl = document.createElement('div');
+      numberEl.className = 'number';
+      numberEl.textContent = number;
+
+      const layer = document.createElement('div');
+      layer.className = 'scratch-layer';
+      layer.textContent = '////';
+
+      btn.appendChild(numberEl);
+      btn.appendChild(layer);
+
+      btn.addEventListener('click', () => {
+        if (!revealed && !state.roundOver) {
+          scratch(index);
+        } else {
+          state.cursor = index;
+          render();
+        }
+      });
+
+      return btn;
+    }
+
+    function render() {
+      winCard.innerHTML = '';
+      myGrid.innerHTML = '';
+
+      const winRevealed = state.revealed[0];
+      const winCardEl = createCard({
+        number: state.winningNumber,
+        revealed: winRevealed,
+        selected: state.cursor === 0,
+        win: true,
+        match: false,
+        index: 0,
+      });
+      winCard.appendChild(winCardEl);
+
+      state.myNumbers.forEach((num, i) => {
+        const idx = i + 1;
+        const revealed = state.revealed[idx];
+        const match = revealed && num === state.winningNumber;
+        myGrid.appendChild(createCard({
+          number: num,
+          revealed,
+          selected: state.cursor === idx,
+          win: false,
+          match,
+          index: idx,
+        }));
+      });
+
+      spentEl.textContent = fmt(state.totalSpent);
+      earnedEl.textContent = fmt(state.totalEarned);
+      roundPrizeEl.textContent = fmt(state.roundPrize);
+      remainCountEl.textContent = remainingCount();
+      resultMainEl.textContent = state.resultMain;
+      resultSubEl.textContent = state.resultSub;
+
+      const profit = state.totalEarned - state.totalSpent;
+      profitEl.textContent = fmt(profit);
+      profitEl.classList.remove('plus', 'minus');
+      profitEl.classList.add(profit >= 0 ? 'plus' : 'minus');
+
+      scratchBtn.disabled = state.roundOver;
+      scratchBtn.style.opacity = state.roundOver ? '0.55' : '1';
+      scratchBtn.style.cursor = state.roundOver ? 'not-allowed' : 'pointer';
+
+      resultMainEl.style.color = state.roundOver
+        ? (state.currentPrize > 0 ? 'var(--green)' : 'var(--red)')
+        : 'var(--line)';
+    }
+
+    scratchBtn.addEventListener('click', () => scratch());
+    newRoundBtn.addEventListener('click', () => newRound());
+
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.toLowerCase();
+      if (['arrowleft', 'arrowright', ' ', 'enter', 'r', 'a', 'd'].includes(key) || e.key === ' ') {
+        e.preventDefault();
+      }
+
+      if (key === 'arrowleft' || key === 'a') moveCursor(-1);
+      else if (key === 'arrowright' || key === 'd') moveCursor(1);
+      else if (key === ' ' || key === 'enter') scratch();
+      else if (key === 'r') newRound();
+    });
+
+    newRound(true);
+  </script>
+</body>
+</html>
